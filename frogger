@@ -1,0 +1,284 @@
+import acm.program.GraphicsProgram;
+import acm.program.*;
+import acm.graphics.*;
+import acm.util.RandomGenerator;
+
+
+import javax.swing.*;
+import java.awt.event.MouseEvent;
+import java.util.*;
+import java.awt.event.KeyEvent;
+import java.awt.*;
+
+public class frogger extends GraphicsProgram {
+    private static final double frogWidth = 20;
+    private static final double frogHeight = 20;
+    private static final double carWidth = 50;
+    private static final double carHeight = 30;
+    private static final double carSep = 50;
+    private static final double carSepX = 150;
+    private static final double carsXOffset = 55;
+    private static final double carsYOffset = 150;
+    private static final double logWidth = 80;
+    private static final double logHeight = 25;
+    private static final double logSep = 150;
+    private static final double logSepY = 50;
+    private static final double logXOffset = 50;
+    private static final double logYOffset = 30;
+    private static final double frogOffset = 5;
+    private GOval frog;
+    private static int numLives = 3;
+    Color colorBrown = new Color(0, 216, 0);
+    private GLabel pressToStart;
+    Color colorBrown2 = new Color(0,215,0);
+    Color colorBrown3 = new Color(0, 214, 0);
+    GOval flyBody = new GOval(10, 10);
+    GOval flyWingLeft = new GOval(8, 6);
+    GOval flyWingRight = new GOval(8, 6);
+
+    public void run() {
+        getGCanvas().setFocusable(true);
+        System.out.println(isFocusable());
+        addKeyListeners();
+        addMouseListeners();
+        setUp();
+        while (true) {
+            double frogX = frog.getX();
+            double frogY = frog.getY();
+            moveCars();
+            moveLogs();
+            pause(50);
+        }
+    }
+
+    public void setUpStart() {
+        pressToStart = new GLabel("Press To Start", getWidth()/2 - 20, getHeight()/2 - 10);
+        pressToStart.sendToFront();
+        pressToStart.setColor(Color.black);
+        add(pressToStart);
+
+    }
+
+    public void mouseClicked(MouseEvent e) {
+        remove(pressToStart);
+
+    }
+    public void setupFrog() {
+        frog = new GOval(frogWidth, frogHeight);
+        frog.setFilled(true);
+        frog.setColor(Color.green);
+        add(frog, getWidth()/2 - frogWidth, getHeight() - frogHeight - frogOffset);
+    }
+
+    public void setUpCars() {
+        for(int col = 0; col < 4; col++) {
+            for (int row = 0; row < 2; row++) {
+                GRect car = new GRect(carWidth, carHeight);
+                car.setFilled(true);
+                if (row == 0) {
+                    car.setColor(Color.red);
+                }
+                else {
+                    car.setColor(Color.yellow);
+                }
+                add(car, (col * carWidth) + (col * carSepX) + carsXOffset,  (row * carSep) + (row * carSep) + getHeight() - 220);
+            }
+        }
+    }
+    public void setUpRoad() {
+        GRect road = new GRect(getWidth(),  getHeight()/2);
+        road.setFilled(true);
+        Color grey = new Color(85, 96, 94);
+        road.setColor(grey);
+        add(road, 0, getHeight() - (getHeight()/2));
+        road.sendToBack();
+    }
+
+    public void setUpLogs() {
+        for (int col = 0; col < 4; col++) {
+            for (int row = 0; row < 3; row++) {
+                GRect log = new GRect(logWidth, logHeight);
+                if (row < 1) {
+                    log.setColor(colorBrown);
+                }
+                else if (row < 2){
+                    log.setColor(colorBrown2);
+                }
+                else {
+                    log.setColor(colorBrown3);
+                }
+                log.setFilled(true);
+                add(log, (col * logWidth) + (col * logSep) + logXOffset, (row * logHeight) + (row * logSepY) + logYOffset);
+            }
+        }
+    }
+
+    public void setUpRiver() {
+        GRect river = new GRect(getWidth(),  getHeight()/2);
+        river.setFilled(true);
+        Color blue = new Color(66, 223, 255, 165);
+        river.setColor(blue);
+        add(river, 0, getHeight() - (getHeight()/2 * 2));
+        river.sendToBack();
+    }
+    public void printYouLose() {
+        GLabel printYouLose = new GLabel("You Lose!",getWidth()/2 - 20, getHeight()/2 - 10);
+        printYouLose.sendToFront();
+        printYouLose.setColor(Color.black);
+        add(printYouLose);
+    }
+
+    public void moveCars() {
+        Iterator <GObject> iterator = iterator();
+        while(iterator.hasNext()) {
+            GObject g = iterator.next();
+            if (g instanceof GRect && (((GRect) g).getColor().equals(Color.yellow))) {
+                ((GRect) g).move(5, 0);
+                if (!isInScreen(g)) {
+                    g.move(-getWidth(), 0);
+                }
+            }
+            if (g instanceof GRect && (((GRect) g).getColor().equals(Color.red))) {
+                ((GRect) g).move(-7, 0);
+                if (!isInScreen(g)) {
+                    g.move(getWidth(), 0);
+                }
+            }
+        }
+    }
+
+    public void moveLogs() {
+        Iterator <GObject> iterator = iterator();
+        while(iterator.hasNext()) {
+            GObject g = iterator.next();
+            if (g instanceof GRect && ((GRect) g).getColor().equals(colorBrown)) {
+                ((GRect) g).move(3, 0);
+                if (!isInScreen(g)) {
+                    g.move(-getWidth(), 0);
+                }
+            }
+
+            if (g instanceof GRect && ((GRect) g).getColor().equals(colorBrown2)) {
+                ((GRect) g).move(-5.5, 0);
+                if (!isInScreen(g)) {
+                    g.move(getWidth(), 0);
+                }
+            }
+            if (g instanceof GRect && ((GRect) g).getColor().equals(colorBrown3)) {
+                ((GRect) g).move(5, 0);
+                if (!isInScreen(g)) {
+                    g.move(-getWidth(), 0);
+                }
+            }
+        }
+    }
+
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_UP) {
+            frog.move(0, -5);
+        }
+        else if (e.getKeyCode() ==KeyEvent.VK_DOWN) {
+            frog.move(0, 5);
+        }
+        else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            frog.move(5,0);
+        }
+        else if (e.getKeyCode()== KeyEvent.VK_LEFT) {
+            frog.move(-5,0);
+        }
+        if (collide(frog.getX(), frog.getY())) {
+            frog.setLocation(getWidth()/2 - frogWidth, getHeight() - frogHeight - frogOffset);
+           numLives--;
+           updateLives();
+           if (numLives == 0) {
+               printYouLose();
+            }
+        }
+        if (isTouchingFly(frog.getX(), frog.getY())) {
+            printYouWin();
+            remove(flyBody);
+            remove(flyWingLeft);
+            remove(flyWingRight);
+        }
+    }
+
+    private boolean isInScreen (GObject g) {
+        return (contains((int)g.getX(), (int)g.getY()));
+    }
+
+    private boolean collide(double frogX, double frogY) {
+        GPoint topLeft = new GPoint(frogX, frogY);
+        GPoint topRight = new GPoint(frogX + frogWidth, frogY);
+        if (getElementAt(topLeft).getColor() == colorBrown || getElementAt(topLeft).getColor() == colorBrown2 || getElementAt(topLeft).getColor() == colorBrown3) {
+            return true;
+        }
+        else if (getElementAt(topLeft).getColor() == Color.red) {
+            return true;
+        }
+        else if (getElementAt(topLeft).getColor() == Color.yellow) {
+            return true;
+        }
+        else if (getElementAt(topRight).getColor() == colorBrown || getElementAt(topRight).getColor() == colorBrown2 || getElementAt(topRight).getColor() == colorBrown3) {
+            return true;
+        }
+        else if (getElementAt(topRight).getColor() == Color.red) {
+            return true;
+        }
+        else if (getElementAt(topRight).getColor() == Color.yellow) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isTouchingFly(double frogX, double frogY) {
+        GPoint topLeft = new GPoint(frogX, frogY);
+        GPoint topRight = new GPoint(frogX + frogWidth, frogY);
+
+        if (getElementAt(topLeft).getColor() == Color.black) {
+            return true;
+        }
+        if (getElementAt(topRight).getColor() == Color.black) {
+            return true;
+        }
+        return false;
+    }
+
+    private void createFly() {
+        RandomGenerator rgen = RandomGenerator.getInstance();
+        double flyXPosition = rgen.nextDouble(0, getWidth());
+        flyBody.setFilled(true);
+        flyBody.setColor(Color.black);
+        add(flyBody, flyXPosition,10);
+        flyWingLeft.setColor(Color.white);
+        add(flyWingLeft, flyBody.getX() - 10, 12);
+        flyWingRight.setColor(Color.white);
+        add(flyWingRight, flyBody.getX() + 10, 12);
+
+    }
+    private void printYouWin() {
+        GLabel printYouWin = new GLabel("You win!", getWidth()/2 - 20, getHeight()/2 - 10);
+        printYouWin.sendToFront();
+        printYouWin.setColor(Color.black);
+        add(printYouWin);
+    }
+    private void updateLives() {
+        GLabel numberOfLives = new GLabel("Lives: " + numLives,  10, getHeight() - 15);
+        GObject oldLivesLabel = getElementAt(numberOfLives.getLocation());
+        if (oldLivesLabel instanceof GLabel) {
+            remove(oldLivesLabel);
+        }
+        add(numberOfLives);
+    }
+
+    public void setUp() {
+        setupFrog();
+        setUpCars();
+        setUpRoad();
+        setUpLogs();
+        setUpRiver();
+        setUpStart();
+        createFly();
+        updateLives();
+    }
+
+}
