@@ -50,7 +50,7 @@ public class frogger extends GraphicsProgram {
             pause(50);
         }
     }
-
+//writes press to start accross screen
     public void setUpStart() {
         pressToStart = new GLabel("Press To Start", getWidth()/2 - 20, getHeight()/2 - 10);
         pressToStart.sendToFront();
@@ -58,18 +58,19 @@ public class frogger extends GraphicsProgram {
         add(pressToStart);
 
     }
-
+//removes press to start button
     public void mouseClicked(MouseEvent e) {
         remove(pressToStart);
 
     }
+    //sets up frog and adds to bottom of screen
     public void setupFrog() {
         frog = new GOval(frogWidth, frogHeight);
         frog.setFilled(true);
         frog.setColor(Color.green);
         add(frog, getWidth()/2 - frogWidth, getHeight() - frogHeight - frogOffset);
     }
-
+//sets up cars
     public void setUpCars() {
         for(int col = 0; col < 4; col++) {
             for (int row = 0; row < 2; row++) {
@@ -85,6 +86,7 @@ public class frogger extends GraphicsProgram {
             }
         }
     }
+   // sets up grey road behind cars
     public void setUpRoad() {
         GRect road = new GRect(getWidth(),  getHeight()/2);
         road.setFilled(true);
@@ -93,7 +95,7 @@ public class frogger extends GraphicsProgram {
         add(road, 0, getHeight() - (getHeight()/2));
         road.sendToBack();
     }
-
+//sets up logs
     public void setUpLogs() {
         for (int col = 0; col < 4; col++) {
             for (int row = 0; row < 3; row++) {
@@ -112,7 +114,7 @@ public class frogger extends GraphicsProgram {
             }
         }
     }
-
+//sets up blue river behind logs
     public void setUpRiver() {
         GRect river = new GRect(getWidth(),  getHeight()/2);
         river.setFilled(true);
@@ -121,23 +123,26 @@ public class frogger extends GraphicsProgram {
         add(river, 0, getHeight() - (getHeight()/2 * 2));
         river.sendToBack();
     }
+    //prints you lose when lives are up
     public void printYouLose() {
         GLabel printYouLose = new GLabel("You Lose!",getWidth()/2 - 20, getHeight()/2 - 10);
         printYouLose.sendToFront();
         printYouLose.setColor(Color.black);
         add(printYouLose);
     }
-
+//moves cars accross screen horizonally
     public void moveCars() {
         Iterator <GObject> iterator = iterator();
         while(iterator.hasNext()) {
             GObject g = iterator.next();
+            //checks if car is yellow, and moves to the right
             if (g instanceof GRect && (((GRect) g).getColor().equals(Color.yellow))) {
                 ((GRect) g).move(5, 0);
                 if (!isInScreen(g)) {
                     g.move(-getWidth(), 0);
                 }
             }
+            //checks if car is red, and moves it to the left
             if (g instanceof GRect && (((GRect) g).getColor().equals(Color.red))) {
                 ((GRect) g).move(-7, 0);
                 if (!isInScreen(g)) {
@@ -146,7 +151,7 @@ public class frogger extends GraphicsProgram {
             }
         }
     }
-
+//moves the logs across screen horizontally
     public void moveLogs() {
         Iterator <GObject> iterator = iterator();
         while(iterator.hasNext()) {
@@ -172,7 +177,7 @@ public class frogger extends GraphicsProgram {
             }
         }
     }
-
+//checks if arrow keys are pressed, and moves frog in right direction
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_UP) {
             frog.move(0, -5);
@@ -186,6 +191,7 @@ public class frogger extends GraphicsProgram {
         else if (e.getKeyCode()== KeyEvent.VK_LEFT) {
             frog.move(-5,0);
         }
+        //checks for a collision, sets frog back to origional location, takes away a life
         if (collide(frog.getX(), frog.getY())) {
             frog.setLocation(getWidth()/2 - frogWidth, getHeight() - frogHeight - frogOffset);
            numLives--;
@@ -194,6 +200,7 @@ public class frogger extends GraphicsProgram {
                printYouLose();
             }
         }
+        //checks if frog reaches fly at end of screen
         if (isTouchingFly(frog.getX(), frog.getY())) {
             printYouWin();
             remove(flyBody);
@@ -205,7 +212,7 @@ public class frogger extends GraphicsProgram {
     private boolean isInScreen (GObject g) {
         return (contains((int)g.getX(), (int)g.getY()));
     }
-
+//checks to see if frog hits a car or log
     private boolean collide(double frogX, double frogY) {
         GPoint topLeft = new GPoint(frogX, frogY);
         GPoint topRight = new GPoint(frogX + frogWidth, frogY);
@@ -242,7 +249,7 @@ public class frogger extends GraphicsProgram {
         }
         return false;
     }
-
+//makes fly at the end of the screen
     private void createFly() {
         RandomGenerator rgen = RandomGenerator.getInstance();
         double flyXPosition = rgen.nextDouble(0, getWidth());
@@ -255,6 +262,7 @@ public class frogger extends GraphicsProgram {
         add(flyWingRight, flyBody.getX() + 10, 12);
 
     }
+    //prints you win! when player reaches fly
     private void printYouWin() {
         GLabel printYouWin = new GLabel("You win!", getWidth()/2 - 20, getHeight()/2 - 10);
         printYouWin.sendToFront();
