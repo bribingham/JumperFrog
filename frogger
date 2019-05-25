@@ -28,10 +28,10 @@ public class frogger extends GraphicsProgram {
     private static final double frogOffset = 5;
     private GOval frog;
     private static int numLives = 3;
-    Color colorBrown = new Color(0, 216, 0);
+    Color colorBrown = new Color(146, 107, 49);
     private GLabel pressToStart;
-    Color colorBrown2 = new Color(0,215,0);
-    Color colorBrown3 = new Color(0, 214, 0);
+    Color colorBrown2 = new Color(146,108,49);
+    Color colorBrown3 = new Color(146, 107, 50);
     GOval flyBody = new GOval(10, 10);
     GOval flyWingLeft = new GOval(8, 6);
     GOval flyWingRight = new GOval(8, 6);
